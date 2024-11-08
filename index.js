@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const port = process.env.PORT || 9000;
 
@@ -30,11 +30,27 @@ async function run() {
     const jobCollection = client.db('SoloSphare').collection('jobs')
     const bidsCollection = client.db('SoloSphare').collection('bids')
 
-
+// get all jobs data from db
 app.get("/jobs", async (req, res) => {
   const result = await jobCollection.find().toArray()
   res.send(result)
 });
+
+// get single job data from db using id
+app.get("/job/:id", async (req, res) => {
+  const id =req.params
+  const query = {_id: new ObjectId(id)}
+  const result = await jobCollection.findOne(query)
+  res.send(result)
+})
+
+
+// save a bid data in db
+app.post('/bid', async(req, res) => {
+  const bidData = req.body
+  const result = await bidsCollection.insertOne(bidData)
+  res.send(result)
+})
 
 
 
