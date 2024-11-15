@@ -90,7 +90,33 @@ app.put('/job/:id', async (req, res) => {
   res.send(result)
 })
 
+// get all bids for a user by email from db
+app.get('/myBids/:email', async(req, res) => {
+  const email = req.params.email
+  const query = { email: email}
+  const result = await bidsCollection.find(query).toArray()
+  res.send(result)
+})
 
+// get all bid requests from db for job owner
+app.get('/bidRequests/:email', async(req, res) => {
+  const email = req.params.email
+  const query = {'buyer.email': email}
+  const result = await bidsCollection.find(query).toArray()
+  res.send(result)
+})
+
+// update bid status
+app.patch('/bid/:id', async (req, res) => {
+  const id = req.params.id
+  const status = req.body
+  const query = { _id: new ObjectId(id)}
+  const updateDoc = {
+    $set: status
+  }
+  const result = await bidsCollection.updateOne(query, updateDoc)
+  res.send(result)
+})
 
     // Connect the client to the server	(optional starting in v4.7)
     // Send a ping to confirm a successful connection
